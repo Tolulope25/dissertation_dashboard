@@ -10,7 +10,6 @@ warnings.filterwarnings('ignore')
 
 st.set_page_config(
     page_title="Gender Bias Audit Dashboard",
-    page_icon="📊",
     layout="wide",
     initial_sidebar_state="expanded"
 )
@@ -30,8 +29,7 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 st.title("Gender Bias Audit and Mitigation Dashboard")
-st.markdown("**Evaluating the Interaction Between Data Reweighting and Fairness Constraints in Reducing Gender Bias in Credit Scoring**")
-st.markdown("*Tolulope Animashaun | c7546560 | Leeds Beckett University | MSc Data Science*")
+st.markdown("Evaluating the Interaction Between Data Reweighting and Fairness Constraints in Reducing Gender Bias in Credit Scoring")
 st.divider()
 
 st.sidebar.title("Dashboard Controls")
@@ -46,16 +44,14 @@ mode = st.sidebar.radio(
 st.sidebar.markdown("---")
 st.sidebar.markdown("### About")
 st.sidebar.markdown("""
-This dashboard presents findings from a dissertation study evaluating
+This dashboard presents findings from a study evaluating
 gender bias mitigation in credit scoring models using:
-- **Meta's Balance** (LASSO-IPW and CBPS)
-- **Microsoft's Fairlearn** (DP, EO, EOP constraints)
-- **18-condition factorial experiment**
+- Meta's Balance (LASSO-IPW and CBPS)
+- Microsoft's Fairlearn (DP, EO, EOP constraints)
+- 18-condition factorial experiment
 """)
-st.sidebar.markdown("---")
-st.sidebar.markdown("*Leeds Beckett University | MSc Data Science | 2026*")
 
-DATA_PATH = "data/"
+DATA_PATH = ""
 
 @st.cache_data
 def load_demo_data():
@@ -72,11 +68,11 @@ data_loaded = False
 if "Demo" in mode:
     try:
         baseline, group1, group2, group3, all_conditions = load_demo_data()
-        st.success("Official dissertation results loaded successfully")
+        st.success("Official results loaded successfully")
         data_loaded = True
     except Exception as e:
         st.error(f"Error loading data: {e}")
-        st.info("Make sure all v3 files are in the data/ folder")
+        st.info("Make sure all v3 files are in the correct location")
         data_loaded = False
 
 else:
@@ -182,7 +178,7 @@ if data_loaded and "Demo" in mode:
 
     with tab1:
         st.header("Pre-Mitigation Bias Audit")
-        st.markdown("Measures the level of gender bias in the German Credit dataset **before** any model training or fairness intervention.")
+        st.markdown("Measures the level of gender bias in the dataset before any model training or fairness intervention.")
 
         col1, col2, col3, col4 = st.columns(4)
         with col1:
@@ -206,12 +202,12 @@ if data_loaded and "Demo" in mode:
 
         st.markdown("---")
         st.subheader("Key Finding")
-        st.warning("The pre-mitigation audit score of 0.1714 is classified as HIGH — indicating serious gender bias in the dataset before any intervention.")
+        st.warning("The pre-mitigation audit score of 0.1714 is classified as HIGH, indicating serious gender bias in the dataset before any intervention.")
         st.info("Age was identified as the strongest individual proxy for gender (Cramers V = 0.2588)")
 
     with tab2:
         st.header("Baseline Model Performance")
-        st.markdown("Performance of both classifiers **before** any fairness intervention was applied.")
+        st.markdown("Performance of both classifiers before any fairness intervention was applied.")
 
         col1, col2 = st.columns(2)
         with col1:
@@ -267,8 +263,7 @@ if data_loaded and "Demo" in mode:
         st.markdown("---")
         st.subheader("Compatibility Heatmap")
         all_conditions['Group'] = all_conditions['Balance'] + '\n' + all_conditions['Classifier']
-        all_conditions['Constraint_short'] = all_conditions['Constraint']
-        pivot = all_conditions.pivot_table(values='DPD', index='Group', columns='Constraint_short', aggfunc='mean')
+        pivot = all_conditions.pivot_table(values='DPD', index='Group', columns='Constraint', aggfunc='mean')
         row_order = [
             'No Balance\nLR', 'No Balance\nRF',
             'LASSO\nLR', 'LASSO\nRF',
@@ -284,7 +279,7 @@ if data_loaded and "Demo" in mode:
         ax2.set_title('DPD Heatmap by Balance Method, Constraint and Classifier',
                       fontsize=12, fontweight='bold')
         ax2.set_xlabel('Fairlearn Constraint', fontsize=11)
-        ax2.set_ylabel('Balance Method + Classifier', fontsize=11)
+        ax2.set_ylabel('Balance Method and Classifier', fontsize=11)
         plt.tight_layout()
         st.pyplot(fig2)
 
@@ -312,7 +307,7 @@ if data_loaded and "Demo" in mode:
         st.download_button(
             label="Download All 18 Conditions (CSV)",
             data=csv,
-            file_name="dissertation_results_18_conditions.csv",
+            file_name="results_18_conditions.csv",
             mime="text/csv",
             key="download_btn"
         )
@@ -327,9 +322,9 @@ if data_loaded and "Demo" in mode:
         with col2:
             st.metric("Baseline LR", "0.1049", "+38.8%")
         with col3:
-            st.metric("C15 CBPS+Fairlearn", "0.0720", "+58.0%")
+            st.metric("Condition 15", "0.0720", "+58.0%")
         with col4:
-            st.metric("C1 Fairlearn Only (Best)", "0.0619", "+63.9%")
+            st.metric("Condition 1 (Best)", "0.0619", "+63.9%")
 
         st.markdown("---")
         st.subheader("Audit Comparison Table")
@@ -340,7 +335,7 @@ if data_loaded and "Demo" in mode:
             'Proxy Strength (sAUC)': [0.3901, 0.1210, 0.0119, 0.0090, 0.0150],
             'Audit Score': [0.1714, 0.1049, 0.0619, 0.0720, 0.0728],
             'Classification': ['HIGH', 'MODERATE', 'MODERATE', 'MODERATE', 'MODERATE'],
-            'Improvement': ['—', '+38.8%', '+63.9%', '+58.0%', '+57.6%']
+            'Improvement': ['-', '+38.8%', '+63.9%', '+58.0%', '+57.6%']
         })
         st.dataframe(audit_table, use_container_width=True)
 
@@ -366,7 +361,7 @@ if data_loaded and "Demo" in mode:
 
         if st.button("Get Recommendation", key="rec_btn"):
             if priority == "Best overall bias reduction (Audit Score)":
-                st.success("Recommended: Condition 1 — Fairlearn Demographic Parity + Logistic Regression (No Balance)")
+                st.success("Recommended: Condition 1, Fairlearn Demographic Parity with Logistic Regression, No Balance")
                 col1, col2, col3 = st.columns(3)
                 with col1:
                     st.metric("Overall Audit Improvement", "+63.9%")
@@ -374,10 +369,10 @@ if data_loaded and "Demo" in mode:
                     st.metric("DPD", "0.0227")
                 with col3:
                     st.metric("Accuracy", "0.7580")
-                st.info("This combination achieved the best overall audit score of 0.0619 — a 63.9% improvement from the pre-mitigation baseline of 0.1714.")
+                st.info("This combination achieved the best overall audit score of 0.0619, a 63.9% improvement from the pre-mitigation baseline of 0.1714.")
 
             elif priority == "Best approval rate equality (DPD)":
-                st.success("Recommended: Condition 17 — CBPS Balance + Equal Opportunity + Logistic Regression")
+                st.success("Recommended: Condition 17, CBPS Balance with Equal Opportunity and Logistic Regression")
                 col1, col2, col3 = st.columns(3)
                 with col1:
                     st.metric("DPD", "0.0209")
@@ -388,7 +383,7 @@ if data_loaded and "Demo" in mode:
                 st.info("This combination achieved the lowest DPD of 0.0209 across all 18 conditions.")
 
             elif priority == "Best error rate equality (EOD)":
-                st.success("Recommended: Condition 1 — Fairlearn Demographic Parity + Logistic Regression (No Balance)")
+                st.success("Recommended: Condition 1, Fairlearn Demographic Parity with Logistic Regression, No Balance")
                 col1, col2, col3 = st.columns(3)
                 with col1:
                     st.metric("EOD", "0.0209")
@@ -399,7 +394,7 @@ if data_loaded and "Demo" in mode:
                 st.info("This combination achieved the lowest EOD of 0.0209 across all 18 conditions.")
 
             elif priority == "Fewest creditworthy women wrongly rejected (FNR Women)":
-                st.success("Recommended: Condition 2 — Fairlearn Demographic Parity + Random Forest (No Balance)")
+                st.success("Recommended: Condition 2, Fairlearn Demographic Parity with Random Forest, No Balance")
                 col1, col2, col3 = st.columns(3)
                 with col1:
                     st.metric("FNR Women", "0.0700")
@@ -407,7 +402,7 @@ if data_loaded and "Demo" in mode:
                     st.metric("DPD", "0.0707")
                 with col3:
                     st.metric("Accuracy", "0.7553")
-                st.warning("Note: While this condition achieved the lowest FNR Women, it has a higher DPD than other conditions — illustrating fairness metric incompatibility.")
+                st.warning("This condition achieved the lowest FNR Women, but has a higher DPD than other conditions, illustrating fairness metric incompatibility.")
 
         st.markdown("---")
         st.subheader("All Conditions Ranked by Your Priority")
