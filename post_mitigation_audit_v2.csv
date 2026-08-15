@@ -1,6 +1,0 @@
-condition,audit_score,classification,female_approval_rate,male_approval_rate,approval_rate_gap,representation_gap,proxy_strength
-BASELINE — No Mitigation LR,0.1069,MODERATE,0.7204,0.7923,0.0718,0.21,0.0402
-GROUP 1 BEST — No Balance + DP + LR (C1),0.0938,MODERATE,0.7419,0.8019,0.06,0.2064,0.0095
-GROUP 2 BEST — LASSO + DP + LR (C7),0.0597,MODERATE,0.7634,0.7681,0.0047,0.1913,0.0
-GROUP 3 BEST — CBPS + EO + LR (C15),0.0638,MODERATE,0.7419,0.7536,0.0117,0.1933,0.0
-CONDITION 4 — No Balance + EqualizedOdds + RF (no adjustment),0.1257,MODERATE,0.7957,0.8841,0.0884,0.2121,0.0894
